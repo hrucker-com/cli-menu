@@ -31,7 +31,6 @@ class MenuCLI {
             process.stdin.on('keypress', async (_, key) => await this.handleKeypress(key));
             this.hideCursor();
 
-            //console.log(this.startup_questions);process.exit(0);
             if(this.startup_questions.length > 0){
                 await this.showStartupQuestions(...this.startup_questions);
             } else {
