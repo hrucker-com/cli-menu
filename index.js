@@ -178,7 +178,7 @@ class MenuCLI {
         if (typeof this.actions[action] === "function") {
             await this.actions[action](data);
         } else {
-            console.error(kleur.red("Action Function not found"));
+            console.error(kleur.red(`${this.lang.function_not_found}`));
         }
         if(!hidden){
             console.log(kleur.yellow(`\n${this.lang.pressAnyKey}`));

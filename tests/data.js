@@ -49,6 +49,7 @@ const menu_data = {
         executingAction: "Executing",
         waitRun: "Wait for it to complete.",
         pressAnyKey: "Press any key to continue.",
+        function_not_found: "Action Function not found",
     },
     logo: async () => {
         return "YOUR LOGO HERE\n";
