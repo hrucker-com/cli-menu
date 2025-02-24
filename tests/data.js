@@ -41,6 +41,7 @@ const menu_data = {
     },
     lang: {
         mainMenu: "Main Menu",
+        startup_instructions: "Before you start, you need to make some settings.",
         instructions: "Use arrow keys to navigate, Enter to select, Space for help, Esc to go back.",
         submenuIndicator: "▶",
         returnMessage: "Use Space or Esc to return",
@@ -69,7 +70,7 @@ const menu_data = {
                         progressBar.stop();
                         resolve();
                     }
-                }, 800);
+                }, 100);
             });
             return true;
         }

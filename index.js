@@ -5,31 +5,39 @@ const keypress = require('keypress');
 const kleur = require('kleur');
 
 class MenuCLI {
-    constructor(data, actions) {
-        this.menu = data.menu || {};
-        this.lang = data.lang || {};
-        this.logo = data.logo || null;
-        this.actions = data.actions || actions || {};
-        this.btype = data.btype || 'line';
-        this.selectedIndex = 0;
-        this.menuStack = [{ menu: this.menu, name: this.lang.mainMenu }];
-        this.showingDescription = false;
-        this.isRunningAction = false;
-        this.isAskingQuestions = false;
+    constructor(data, actions, startup_questions = []) {
+        return (async () => {
+            this.menu = data.menu || {};
+            this.lang = data.lang || {};
+            this.logo = data.logo || null;
+            this.actions = data.actions || actions || {};
+            this.startup_questions = data.startup_questions || startup_questions || [];
+            this.btype = data.btype || 'line';
+            this.selectedIndex = 0;
+            this.menuStack = [{ menu: this.menu, name: this.lang.mainMenu }];
+            this.showingDescription = false;
+            this.isRunningAction = false;
+            this.isAskingQuestions = false;
 
-        this.rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
-        this.rl._writeToOutput = () => {};
+            this.rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            });
+            this.rl._writeToOutput = () => {};
 
-        keypress(process.stdin);
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        process.stdin.on('keypress', async (_, key) => await this.handleKeypress(key));
+            keypress(process.stdin);
+            process.stdin.setRawMode(true);
+            process.stdin.resume();
+            process.stdin.on('keypress', async (_, key) => await this.handleKeypress(key));
+            this.hideCursor();
 
-        this.hideCursor();
-        this.showMenu();
+            //console.log(this.startup_questions);process.exit(0);
+            if(this.startup_questions.length > 0){
+                await this.showStartupQuestions(...this.startup_questions);
+            } else {
+                await this.showMenu();
+            }
+        })();
     }
 
     hideCursor() {
@@ -125,7 +133,15 @@ class MenuCLI {
         }
     }
 
-    async askQuestions(questions, action) {
+    async showStartupQuestions(questions, action) {
+        this.clearScreen();
+        await this.renderLogo();
+        console.log(kleur.gray(`${this.lang.startup_instructions}\n`));
+        await this.askQuestions(questions, action, true);
+        return true;
+    }
+
+    async askQuestions(questions, action, hidden = false) {
         this.isAskingQuestions = true;
         let answers = {};
         let questionIndex = 0;
@@ -135,7 +151,7 @@ class MenuCLI {
             if (questionIndex >= questions.length) {
                 this.isAskingQuestions = false;
                 this.rl._writeToOutput = () => {};
-                await this.runAction(action, answers);
+                await this.runAction(action, answers, hidden);
                 return;
             }
 
@@ -151,28 +167,32 @@ class MenuCLI {
         await askNextQuestion();
     }
 
-    async runAction(action, data) {
+    async runAction(action, data, hidden = false) {
         this.isRunningAction = true;
-        this.clearScreen();
-        await this.renderLogo();
-        console.log(kleur.gray(`${this.lang.waitRun}\n`));
-        console.log(kleur.cyan(`${this.getBreadcrumbs()}\n`));
-        console.log(`${this.lang.executingAction} ${action}:`);
-
-        //////////////////////////////////////////
+        if(!hidden){
+            this.clearScreen();
+            await this.renderLogo();
+            console.log(kleur.gray(`${this.lang.waitRun}\n`));
+            console.log(kleur.cyan(`${this.getBreadcrumbs()}\n`));
+            console.log(`${this.lang.executingAction} ${action}:`);
+        }
         if (typeof this.actions[action] === "function") {
             await this.actions[action](data);
         } else {
             console.error(kleur.red("Action Function not found"));
         }
-        console.log(kleur.yellow(`\n${this.lang.pressAnyKey}`));
-        await new Promise(resolve => {
-            process.stdin.once("data", () => resolve());
-        });
-        //////////////////////////////////////////
-
+        if(!hidden){
+            console.log(kleur.yellow(`\n${this.lang.pressAnyKey}`));
+            await new Promise(resolve => {
+                process.stdin.once("data", () => resolve());
+            });
+        }
         this.isRunningAction = false;
-        await this.showMenu();
+        if(!hidden){
+            await this.showMenu();
+        } else {
+            this.clearScreen();
+        }
     }
 
     async reloadMenu(newMenu = null, reset_index = false) {
