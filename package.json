@@ -1,0 +1,23 @@
+{
+  "name": "cli-menu",
+  "version": "1.0.0",
+  "description": "Create cli-menu",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd ./tests && node ./test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hrucker-com/cli-menu.git"
+  },
+  "keywords": [],
+  "author": "hrucker-com",
+  "license": "MIT",
+  "dependencies": {
+    "cli-progress": "^3.12.0",
+    "figlet": "^1.8.0",
+    "gradient-string": "^3.0.0",
+    "keypress": "^0.2.1",
+    "kleur": "^4.1.5"
+  }
+}
