@@ -28,7 +28,9 @@ class MenuCLI {
             keypress(process.stdin);
             process.stdin.setRawMode(true);
             process.stdin.resume();
-            process.stdin.on('keypress', async (_, key) => await this.handleKeypress(key));
+
+            this.keypressHandler = async (_, key) => await this.handleKeypress(key);
+            this.enableKeypress();
             this.hideCursor();
 
             if(this.startup_questions.length > 0){
@@ -37,6 +39,14 @@ class MenuCLI {
                 await this.showMenu();
             }
         })();
+    }
+
+    disableKeypress() {
+        process.stdin.off('keypress', this.keypressHandler);
+    }
+
+    enableKeypress() {
+        process.stdin.on('keypress', this.keypressHandler);
     }
 
     hideCursor() {
@@ -137,6 +147,7 @@ class MenuCLI {
         await this.renderLogo();
         console.log(kleur.gray(`${this.lang.startup_instructions}\n`));
         await this.askQuestions(questions, action, true);
+        this.disableKeypress();
         return true;
     }
 
@@ -192,17 +203,6 @@ class MenuCLI {
         } else {
             this.clearScreen();
         }
-    }
-
-    async reloadMenu(newMenu = null, reset_index = false) {
-        if (newMenu) {
-            this.menu = newMenu;
-            this.menuStack = [{ menu: this.menu, name: this.lang.mainMenu }];
-        }
-        if(reset_index){
-            this.selectedIndex = 0;
-        }
-        await this.showMenu();
     }
 
     exitProgram() {
