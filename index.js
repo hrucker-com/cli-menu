@@ -179,24 +179,21 @@ class MenuCLI {
 
     async runAction(action, data, hidden = false) {
         this.isRunningAction = true;
+        this.clearScreen();
+        await this.renderLogo();
+        console.log(kleur.gray(`${this.lang.waitRun}\n`));
         if(!hidden){
-            this.clearScreen();
-            await this.renderLogo();
-            console.log(kleur.gray(`${this.lang.waitRun}\n`));
             console.log(kleur.cyan(`${this.getBreadcrumbs()}\n`));
-            console.log(`${this.lang.executingAction} ${action}:`);
         }
         if (typeof this.actions[action] === "function") {
             await this.actions[action](data);
         } else {
             console.error(kleur.red(`${this.lang.function_not_found}`));
         }
-        if(!hidden){
-            console.log(kleur.yellow(`\n${this.lang.pressAnyKey}`));
-            await new Promise(resolve => {
-                process.stdin.once("data", () => resolve());
-            });
-        }
+        console.log(kleur.yellow(`\n${this.lang.pressAnyKey}`));
+        await new Promise(resolve => {
+            process.stdin.once("data", () => resolve());
+        });
         this.isRunningAction = false;
         if(!hidden){
             await this.showMenu();
