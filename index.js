@@ -170,7 +170,7 @@ class MenuCLI {
             this.clearScreen();
             await this.renderLogo();
             await this.renderInstructions(this.lang?.setup_instructions);
-            await this.renderBreadcrumbs(this.setup[0]);
+            await this.renderBreadcrumbs(current_name);
             await this.renderInformation();
         }
         await this.askQuestions(current_name, action, questions);
