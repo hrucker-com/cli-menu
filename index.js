@@ -220,6 +220,8 @@ class MenuCLI {
             this.exitProgram();
         } else if(run_result == 'reloadMenu'){
             await this.reloadMenu();
+        } else if(run_result == 'reloadSetup'){
+            await this.showSetup();
         }
     }
 
