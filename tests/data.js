@@ -15,7 +15,7 @@ const menu_data = {
         functionNotFound: 'red',
         pressAnyKey: 'blue',
 
-    },
+    },*/
     setup: [
         `Setup`,
         `progress_bar_test`,
@@ -24,7 +24,7 @@ const menu_data = {
             { id: "s2", text: "Enter s2:" },
         ], 
     ],
-    information: async (menuStack, menuIndex) => {
+    /*information: async (menuStack, menuIndex) => {
         const lastMenu = menuStack[menuStack.length - 1].menu;
         const keys = Object.keys(lastMenu);
         if (keys[menuIndex]) {
