@@ -67,8 +67,9 @@ const menu_data = {
     },
     lang: {
         mainMenu: "Main Menu",
-        setup_instructions: "Before you start, you need to make some settings.",
         instructions: "Use arrow keys to navigate, Enter to select, Space for help, Esc to go back.",
+        setup_instructions: "Before you start, you need to make some settings.",
+        questions_instructions: "Enter the required data.",
         menuActiveIndicator: "=",
         submenuIndicator: "▶",
         returnMessage: "Use Space or Esc to return",

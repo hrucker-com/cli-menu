@@ -169,7 +169,7 @@ class MenuCLI {
         if (this.show_interface){
             this.clearScreen();
             await this.renderLogo();
-            await this.renderInstructions(this.lang?.setup_instructions);
+            await this.renderInstructions(this.lang?.questions_instructions);
             await this.renderBreadcrumbs(current_name);
             await this.renderInformation();
         }
