@@ -162,7 +162,18 @@ class MenuCLI {
             await this.renderInformation();
         }
         await this.askQuestions(...this.setup);
+    }
 
+    async showQuestions(current_name, action, questions){
+        if (this.isExited){ return; }
+        if (this.show_interface){
+            this.clearScreen();
+            await this.renderLogo();
+            await this.renderInstructions(this.lang?.setup_instructions);
+            await this.renderBreadcrumbs(this.setup[0]);
+            await this.renderInformation();
+        }
+        await this.askQuestions(current_name, action, questions);
     }
 
     async askQuestions(current_name, action, questions) {
@@ -176,7 +187,6 @@ class MenuCLI {
             if (questionIndex >= questions.length) {
                 this.isAskingQuestions = false;
                 this.rl._writeToOutput = () => {};
-                this.hideCursor();
                 this.hideCursor();
                 await this.runAction(current_name, action, answers);
                 return;
@@ -212,6 +222,8 @@ class MenuCLI {
             process.stdin.once("data", () => resolve());
         });
         this.isRunningAction = false;
+        console.log(run_result);
+        process.exit()
         if(!run_result){
             await this.showMenu();
         } else if(run_result == 'exitMenu'){
@@ -244,7 +256,7 @@ class MenuCLI {
             this.selectedIndex = 0;
             await this.showMenu();
         } else if (selectedItem.questions) {
-            await this.askQuestions(selectedKey, selectedItem.action, selectedItem.questions);
+            await this.showQuestions(selectedKey, selectedItem.action, selectedItem.questions);
         } else if (selectedItem.action) {
             await this.runAction(selectedKey, selectedItem.action);
         } else if (selectedItem.submenu) {
