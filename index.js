@@ -222,8 +222,6 @@ class MenuCLI {
             process.stdin.once("data", () => resolve());
         });
         this.isRunningAction = false;
-        console.log(run_result);
-        process.exit()
         if(!run_result){
             await this.showMenu();
         } else if(run_result == 'exitMenu'){
