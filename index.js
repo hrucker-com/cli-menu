@@ -2,7 +2,17 @@ const readline = require('readline');
 const keypress = require('keypress');
 const kleur = require('kleur');
 
+/**
+ * Represents a CLI menu system that allows navigation through menus, submenus, and actions.
+ * @class
+ */
 class MenuCLI {
+    /**
+     * Initializes the MenuCLI instance.
+     * @constructor
+     * @param {Object|Function} data_or_function - The data object or function that returns the data object for the menu.
+     * @returns {Promise} A promise that resolves when the menu is exited.
+     */
     constructor(data_or_function) {
         return new Promise(async (resolve) => {
             this.data_or_function = data_or_function;
@@ -34,6 +44,12 @@ class MenuCLI {
         });
     }
 
+    /**
+     * Reloads the menu data and updates the menu display.
+     * @async
+     * @param {number} selectedIndex - The index of the selected menu item.
+     * @returns {Promise<boolean>} A promise that resolves to true when the menu is reloaded.
+     */
     async reloadMenu(selectedIndex) {
         if(typeof this.data_or_function === `function`){
             this.data = await this.data_or_function();
@@ -69,6 +85,11 @@ class MenuCLI {
         return true;
     }
 
+    /**
+     * Renders the logo if it exists.
+     * @async
+     * @returns {Promise<boolean>} A promise that resolves to true if the logo is rendered, otherwise false.
+     */
     async renderLogo() {
         if (this.logo) {
             if (typeof this.logo === "function") {
@@ -81,6 +102,12 @@ class MenuCLI {
         return false;
     }
 
+    /**
+     * Renders instructions text if provided.
+     * @async
+     * @param {string} text - The instructions text to render.
+     * @returns {Promise<boolean>} A promise that resolves to true if the text is rendered, otherwise false.
+     */
     async renderInstructions(text = '') {
         if(text){
             console.log(kleur[this.colors.instructions](text));
@@ -89,6 +116,12 @@ class MenuCLI {
         return false;
     }
 
+    /**
+     * Renders breadcrumbs based on the current menu stack.
+     * @async
+     * @param {string} current_name - The name of the current menu item.
+     * @returns {Promise<boolean>} A promise that resolves to true if breadcrumbs are rendered, otherwise false.
+     */
     async renderBreadcrumbs(current_name) {
         let menu = [...this.menuStack];
         if(current_name) {
@@ -109,6 +142,11 @@ class MenuCLI {
         return false;
     }
 
+    /**
+     * Renders additional information if provided.
+     * @async
+     * @returns {Promise<boolean>} A promise that resolves to true if information is rendered, otherwise false.
+     */
     async renderInformation() {
         if (this.information) {
             if (typeof this.information === "function") {
@@ -122,6 +160,11 @@ class MenuCLI {
         return false;
     }
 
+    /**
+     * Displays the current menu.
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the menu is displayed.
+     */
     async showMenu() {
         if (this.isExited){ return; }
         if (this.show_interface){
@@ -140,6 +183,11 @@ class MenuCLI {
         });
     }
 
+    /**
+     * Displays the description of the currently selected menu item.
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the description is displayed.
+     */
     async showDescription() {
         if (this.isExited){ return; }
         if (this.show_interface){
@@ -152,6 +200,11 @@ class MenuCLI {
         console.log(kleur[this.colors.description](this.getCurrentMenu()[Object.keys(this.getCurrentMenu())[this.selectedIndex]].description || this.lang.noDescription));
     }
 
+    /**
+     * Displays the setup menu if it exists.
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the setup menu is displayed.
+     */
     async showSetup() {
         if (this.isExited){ return; }
         if (this.show_interface){
@@ -164,6 +217,14 @@ class MenuCLI {
         await this.askQuestions(...this.setup);
     }
 
+    /**
+     * Displays questions for the user to answer.
+     * @async
+     * @param {string} current_name - The name of the current menu item.
+     * @param {string} action - The action associated with the questions.
+     * @param {Array} questions - The list of questions to ask.
+     * @returns {Promise<void>} A promise that resolves when the questions are displayed.
+     */
     async showQuestions(current_name, action, questions){
         if (this.isExited){ return; }
         if (this.show_interface){
@@ -176,6 +237,14 @@ class MenuCLI {
         await this.askQuestions(current_name, action, questions);
     }
 
+    /**
+     * Asks the user a series of questions and collects their answers.
+     * @async
+     * @param {string} current_name - The name of the current menu item.
+     * @param {string} action - The action associated with the questions.
+     * @param {Array} questions - The list of questions to ask.
+     * @returns {Promise<void>} A promise that resolves when all questions are answered.
+     */
     async askQuestions(current_name, action, questions) {
         this.isAskingQuestions = true;
         let answers = {};
@@ -204,6 +273,14 @@ class MenuCLI {
         await askNextQuestion();
     }
 
+    /**
+     * Runs the action associated with the selected menu item.
+     * @async
+     * @param {string} menu_name - The name of the menu item.
+     * @param {string} action - The action to run.
+     * @param {Object} data - Additional data to pass to the action.
+     * @returns {Promise<void>} A promise that resolves when the action is completed.
+     */
     async runAction(menu_name, action, data = {}) {
         this.isRunningAction = true;
         this.clearScreen();
@@ -235,6 +312,11 @@ class MenuCLI {
         }
     }
 
+    /**
+     * Handles the selection of a menu item.
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the selection is handled.
+     */
     async handleSelection() {
         if (this.isRunningAction || this.isAskingQuestions) return;
 
@@ -264,6 +346,12 @@ class MenuCLI {
         }
     }
 
+    /**
+     * Handles keypress events for navigating the menu.
+     * @async
+     * @param {Object} key - The keypress event object.
+     * @returns {Promise<void>} A promise that resolves when the keypress is handled.
+     */
     async handleKeypress(key) {
         if (!key || this.isRunningAction || this.isAskingQuestions) return;
         const currentMenu = this.getCurrentMenu();
@@ -301,6 +389,10 @@ class MenuCLI {
         }
     }
 
+    /**
+     * Exits the current menu.
+     * @returns {void}
+     */
     exitMenu() {
         this.isExited = true;
         this.clearScreen();
@@ -312,6 +404,10 @@ class MenuCLI {
         }
     }
 
+    /**
+     * Exits the program.
+     * @returns {void}
+     */
     exitProgram() {
         this.clearScreen();
         this.showCursor();
@@ -320,26 +416,50 @@ class MenuCLI {
         process.exit();
     }
 
+    /**
+     * Disables keypress event handling.
+     * @returns {void}
+     */
     disableKeypress() {
         process.stdin.off('keypress', this.keypressHandler);
     }
 
+    /**
+     * Enables keypress event handling.
+     * @returns {void}
+     */
     enableKeypress() {
         process.stdin.on('keypress', this.keypressHandler);
     }
 
+    /**
+     * Hides the cursor in the terminal.
+     * @returns {void}
+     */
     hideCursor() {
         process.stdout.write("\x1B[?25l");
     }
 
+    /**
+     * Shows the cursor in the terminal.
+     * @returns {void}
+     */
     showCursor() {
         process.stdout.write("\x1B[?25h");
     }
 
+    /**
+     * Clears the terminal screen.
+     * @returns {void}
+     */
     clearScreen() {
         console.clear();
     }
 
+    /**
+     * Gets the current menu from the menu stack.
+     * @returns {Object} The current menu object.
+     */
     getCurrentMenu() {
         return this.menuStack[this.menuStack.length - 1].menu;
     }
