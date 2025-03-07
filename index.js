@@ -262,10 +262,13 @@ class MenuCLI {
             }
 
             const question = questions[questionIndex];
-            answers[question.id] = await new Promise(resolve => {
-                this.rl.question(kleur[this.colors.question](`${question.text}\n`), resolve);
-            });
-
+            if(`value` in question) {
+                answers[question.id] = question.value;
+            } else {
+                answers[question.id] = await new Promise(resolve => {
+                    this.rl.question(kleur[this.colors.question](`${question.text}\n`), resolve);
+                });
+            }
             questionIndex++;
             await askNextQuestion();
         };
